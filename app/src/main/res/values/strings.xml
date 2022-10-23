@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">eMovie</string>
+    <string name="see_more">SEE MORE</string>
+    <string name="see_less">SEE LESS</string>
+    <string name="label_back">Back</string>
+    <string name="movie_plot">Movie Plot</string>
+
+
+</resources>
