@@ -22,7 +22,6 @@ import com.jhoangamarra.emovie.lib.movie.model.Movie
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.fresco.FrescoImage
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MoviePosterCard(viewModel: HomeViewModel,  movie: Movie) {
     AnimatedContent(

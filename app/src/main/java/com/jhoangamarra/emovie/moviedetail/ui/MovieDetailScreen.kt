@@ -1,33 +1,41 @@
 package com.jhoangamarra.emovie.moviedetail.ui
 
 import android.app.Activity
-import android.content.res.Configuration
-import androidx.compose.foundation.ScrollState
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,25 +43,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.lerp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -64,12 +68,11 @@ import com.jhoangamarra.emovie.lib.movie.model.Movie
 import com.jhoangamarra.emovie.lib.navigation.composable
 import com.jhoangamarra.emovie.lib.utils.mirroringBackIcon
 import com.jhoangamarra.emovie.moviedetail.navigation.MovieDetailRoute
-import com.jhoangamarra.emovie.ui.theme.EMovieTheme
 import com.jhoangamarra.emovie.ui.theme.Neutral0
 import com.jhoangamarra.emovie.ui.theme.Neutral1
 import com.jhoangamarra.emovie.ui.theme.Neutral3
+import com.jhoangamarra.emovie.ui.theme.Neutral4
 import com.jhoangamarra.emovie.ui.theme.Neutral8
-import com.jhoangamarra.emovie.ui.theme.Shadow1
 import com.jhoangamarra.emovie.ui.theme.tornado1
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.fresco.FrescoImage
@@ -77,18 +80,14 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.components.ActivityComponent
-import kotlin.math.max
-import kotlin.math.min
+import me.onebone.toolbar.CollapsingToolbarScaffold
+import me.onebone.toolbar.ScrollStrategy
+import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 
-private val BottomBarHeight = 56.dp
 private val TitleHeight = 128.dp
 private val GradientScroll = 180.dp
 private val ImageOverlap = 115.dp
 private val MinTitleOffset = 56.dp
-private val MinImageOffset = 12.dp
-private val MaxTitleOffset = ImageOverlap + MinTitleOffset + GradientScroll
-private val ExpandedImageSize = 300.dp
-private val CollapsedImageSize = 150.dp
 private val HzPadding = Modifier.padding(horizontal = 24.dp)
 private const val DividerAlpha = 0.12f
 
@@ -118,49 +117,44 @@ fun MovieDetailScreen(state: MovieDetailViewModel.State, modifier: Modifier) {
     val movie = state.movieDetail ?: return
     val navController = LocalNavControllerProvider.current
 
-    Box(Modifier.fillMaxSize()) {
-        val scroll = rememberScrollState(0)
-        Header()
-        Body(scroll)
-        Title(movie) { scroll.value }
-        Image(movie.posterPath) { scroll.value }
+    val toolbarState = rememberCollapsingToolbarScaffoldState()
+
+    Box {
+        CollapsingToolbarScaffold(
+            modifier = Modifier.fillMaxSize(),
+            state = toolbarState,
+            scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
+            toolbarModifier = Modifier.background(Brush.horizontalGradient(tornado1)),
+            toolbar = {
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                )
+                FrescoImage(
+                    imageUrl = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .parallax(0.5f)
+                        .height(500.dp)
+                        .graphicsLayer {
+                            alpha = toolbarState.toolbarState.progress
+                        },
+                    observeLoadingProcess = true,
+                    circularReveal = CircularReveal()
+                )
+            }
+        ) {
+            val scroll = rememberScrollState(0)
+            Column(Modifier.verticalScroll(scroll), horizontalAlignment = CenterHorizontally) {
+                Title(movie = movie)
+                Spacer(Modifier.height(26.dp))
+                Body(movieDetail = movie)
+            }
+        }
         Up { navController.navigateUp() }
     }
 
-//    Scaffold(topBar = {
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(16.dp),
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            Icon(
-//                painter = painterResource(id = R.drawable.ic_back),
-//                contentDescription = "back",
-//                tint = MaterialTheme.colors.onSurface.copy(alpha = .5f),
-//                modifier = Modifier
-//                    .size(30.dp)
-//                    .weight(.1f)
-//                    .clickable {
-//                        navController.popBackStack()
-//                    }
-//            )
-//        }
-//    }) {
-//
-//
-//    }
-
-}
-
-@Composable
-private fun Header() {
-    Spacer(
-        modifier = Modifier
-            .height(280.dp)
-            .fillMaxWidth()
-            .background(Brush.horizontalGradient(tornado1))
-    )
 }
 
 @Composable
@@ -168,125 +162,148 @@ private fun Up(upPress: () -> Unit) {
     IconButton(
         onClick = upPress,
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
             .size(36.dp)
             .background(
-                color = Neutral8.copy(alpha = 0.32f),
+                color = Neutral4.copy(alpha = 0.32f),
                 shape = CircleShape
             )
     ) {
         Icon(
             imageVector = mirroringBackIcon(),
-            tint = Neutral3,
+            tint = Neutral1,
             contentDescription = stringResource(R.string.label_back)
         )
     }
 }
 
 @Composable
-private fun Body(
-    scroll: ScrollState
-) {
-    Column {
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                //.statusBarsPadding()
-                .height(MinTitleOffset)
-        )
-        Column(
-            modifier = Modifier.verticalScroll(scroll)
-        ) {
-            Spacer(Modifier.height(GradientScroll))
-            Surface(Modifier.fillMaxWidth()) {
-                Column {
-                    Spacer(Modifier.height(ImageOverlap))
-                    Spacer(Modifier.height(TitleHeight))
-
-                    Spacer(Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(R.string.movie_plot),
-                        style = MaterialTheme.typography.overline,
-                        color = Color.White,
-                        modifier = HzPadding
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    var seeMore by remember { mutableStateOf(true) }
-                    Text(
-                        text = "Movie plot text",
-                        style = MaterialTheme.typography.body1,
-                        color = Color.White,
-                        maxLines = if (seeMore) 5 else Int.MAX_VALUE,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = HzPadding
-                    )
-                    val textButton = if (seeMore) {
-                        stringResource(id = R.string.see_more)
-                    } else {
-                        stringResource(id = R.string.see_less)
-                    }
-                    Text(
-                        text = textButton,
-                        style = MaterialTheme.typography.button,
-                        textAlign = TextAlign.Center,
-                        color = Color.White,
-                        modifier = Modifier
-                            .heightIn(20.dp)
-                            .fillMaxWidth()
-                            .padding(top = 15.dp)
-                            .clickable {
-                                seeMore = !seeMore
-                            }
-                    )
-                    Spacer(Modifier.height(40.dp))
-
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun Title(movie: Movie, scrollProvider: () -> Int) {
-    val maxOffset = with(LocalDensity.current) { MaxTitleOffset.toPx() }
-    val minOffset = with(LocalDensity.current) { MinTitleOffset.toPx() }
+private fun Title(movie: Movie) {
+    val context = LocalContext.current
 
     Column(
+        horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.Bottom,
         modifier = Modifier
             .heightIn(min = TitleHeight)
-            //.statusBarsPadding()
-            .offset {
-                val scroll = scrollProvider()
-                val offset = (maxOffset - scroll).coerceAtLeast(minOffset)
-                IntOffset(x = 0, y = offset.toInt())
-            }
+            .statusBarsPadding()
             .background(color = Neutral8)
     ) {
         Spacer(Modifier.height(16.dp))
         Text(
             text = movie.title,
-            style = MaterialTheme.typography.h4,
+            style = MaterialTheme.typography.h5,
             color = Neutral0,
             modifier = HzPadding
         )
-        Text(
-            text = movie.date,
-            style = MaterialTheme.typography.subtitle2,
-            fontSize = 20.sp,
-            color = Neutral1,
-            modifier = HzPadding
-        )
-        Spacer(Modifier.height(4.dp))
-        Text(
-            text = movie.language,
-            style = MaterialTheme.typography.h6,
-            color = Shadow1,
-            modifier = HzPadding
-        )
-
         Spacer(Modifier.height(8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            OptionCard(text = movie.date, backgroundColor = Color.White)
+            OptionCard(text = movie.language, backgroundColor = Color.White)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Filled.Star, contentDescription = "content description", tint = Color.White)
+                OptionCard(text = movie.voteAverage.toString(), backgroundColor = Color.Yellow)
+
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        LazyRow(
+            modifier = HzPadding,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            items(items = movie.genres) { genre ->
+                OptionCard(text = genre, backgroundColor = Color.DarkGray, textColor = Color.White)
+            }
+        }
+        Spacer(Modifier.height(16.dp))
+        OutlinedButton(modifier = Modifier
+            .fillMaxWidth()
+            .align(CenterHorizontally)
+            .padding(start = 30.dp, end = 30.dp),
+            contentPadding = PaddingValues(vertical = 10.dp),
+            onClick = {
+                openYoutubeLink(movie.trailerVideo, context)
+            }) {
+            Text(text = "Ver Trailer", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+        }
+        Spacer(Modifier.height(16.dp))
         EMovieDivider()
+    }
+}
+
+private fun openYoutubeLink(youtubeID: String?, context: Context) {
+    youtubeID?.let {
+        val intentApp = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$youtubeID"))
+        val intentBrowser = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=$youtubeID"))
+        try {
+            context.startActivity(intentApp)
+        } catch (ex: ActivityNotFoundException) {
+            context.startActivity(intentBrowser)
+        }
+    }
+}
+
+
+@Composable
+private fun OptionCard(text: String, backgroundColor: Color, textColor: Color = Color.Black) {
+    Card(
+        shape = RoundedCornerShape(15.dp),
+        modifier = Modifier.wrapContentSize(),
+        backgroundColor = backgroundColor,
+    ) {
+        Text(
+            text = text,
+            Modifier.padding(
+                vertical = 8.dp,
+                horizontal = 10.dp
+            ),
+            style = TextStyle(
+                color = textColor
+            )
+        )
+    }
+}
+
+@Composable
+private fun Body(
+    movieDetail: Movie
+) {
+    Column {
+        Text(
+            text = stringResource(R.string.movie_plot),
+            style = MaterialTheme.typography.h6,
+            color = Color.White,
+            modifier = HzPadding
+        )
+        Spacer(Modifier.height(26.dp))
+        var seeMore by remember { mutableStateOf(true) }
+        Text(
+            text = movieDetail.overview,
+            style = MaterialTheme.typography.body1,
+            color = Color.White,
+            maxLines = if (seeMore) 5 else Int.MAX_VALUE,
+            overflow = TextOverflow.Ellipsis,
+            modifier = HzPadding
+        )
+        val textButton = if (seeMore) {
+            stringResource(id = R.string.see_more)
+        } else {
+            stringResource(id = R.string.see_less)
+        }
+        Text(
+            text = textButton,
+            style = MaterialTheme.typography.button,
+            textAlign = TextAlign.Center,
+            color = Color.White,
+            modifier = Modifier
+                .heightIn(20.dp)
+                .fillMaxWidth()
+                .padding(top = 15.dp)
+                .clickable {
+                    seeMore = !seeMore
+                }
+        )
     }
 }
 
@@ -304,68 +321,6 @@ fun EMovieDivider(
         startIndent = startIndent
     )
 }
-
-@Composable
-private fun Image(
-    imageUrl: String,
-    scrollProvider: () -> Int
-) {
-    val collapseRange = with(LocalDensity.current) { (MaxTitleOffset - MinTitleOffset).toPx() }
-    val collapseFractionProvider = {
-        (scrollProvider() / collapseRange).coerceIn(0f, 1f)
-    }
-
-    CollapsingImageLayout(
-        collapseFractionProvider = collapseFractionProvider,
-        modifier = HzPadding//.then(Modifier.statusBarsPadding())
-    ) {
-        FrescoImage(
-            imageUrl = "https://image.tmdb.org/t/p/w500${imageUrl}",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .clip(RoundedCornerShape(10.dp))
-                .height(220.dp)
-                .width(150.dp),
-            observeLoadingProcess = true,
-            circularReveal = CircularReveal()
-        )
-    }
-}
-
-@Composable
-private fun CollapsingImageLayout(
-    collapseFractionProvider: () -> Float,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
-) {
-    Layout(
-        modifier = modifier,
-        content = content
-    ) { measurables, constraints ->
-        check(measurables.size == 1)
-
-        val collapseFraction = collapseFractionProvider()
-
-        val imageMaxSize = min(ExpandedImageSize.roundToPx(), constraints.maxWidth)
-        val imageMinSize = max(CollapsedImageSize.roundToPx(), constraints.minWidth)
-        val imageWidth = lerp(imageMaxSize, imageMinSize, collapseFraction)
-        val imagePlaceable = measurables[0].measure(Constraints.fixed(imageWidth, imageWidth))
-
-        val imageY = lerp(MinTitleOffset, MinImageOffset, collapseFraction).roundToPx()
-        val imageX = lerp(
-            (constraints.maxWidth - imageWidth) / 2, // centered when expanded
-            constraints.maxWidth - imageWidth, // right aligned when collapsed
-            collapseFraction
-        )
-        layout(
-            width = constraints.maxWidth,
-            height = imageY + imageWidth
-        ) {
-            imagePlaceable.placeRelative(imageX, imageY)
-        }
-    }
-}
-
 
 private fun getViewModel(
     id: Long,

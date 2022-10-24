@@ -1,6 +1,5 @@
 package com.jhoangamarra.emovie.lib.movie.repository
 
-import android.util.Log
 import com.jhoangamarra.emovie.lib.movie.model.ApiGenre
 import com.jhoangamarra.emovie.lib.movie.model.GenreEntity
 import com.jhoangamarra.emovie.lib.movie.model.Movie
@@ -10,6 +9,7 @@ import com.jhoangamarra.emovie.lib.movie.persistence.GenreDao
 import com.jhoangamarra.emovie.lib.movie.persistence.MovieDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import retrofit2.HttpException
 
 class MovieRepositoryImpl(
     private val movieService: MovieService,
@@ -39,20 +39,24 @@ class MovieRepositoryImpl(
     override suspend fun fetchUpcomingMovies() {
         val apiMovies = movieService.getUpcomingMoviesListItems().movies
         val entityMovies = apiMovies.map { apiMovie ->
+            val trailerId = getVideoId(apiMovie.id)
             apiMovie.genres.forEach { genreId ->
                 val genre = fetchGenres().first { apiGenre -> apiGenre.id == genreId }
                 genreDao.insert(GenreEntity(genreId, apiMovie.id, genre.name))
             }
-            apiMovie.toMovieEntity(UPCOMING_MOVIE_TYPE, "getVideoId(movieId = apiMovie.id)")
+            apiMovie.toMovieEntity(UPCOMING_MOVIE_TYPE, trailerId)
         }
         movieDao.insert(entityMovies)
-
     }
 
-    private suspend fun getVideoId(movieId: Long): String {
-        return movieService.getMovieTrailers(movieId).trailers.first {
-            it.official && (it.type == "Trailer") && (it.site == "YouTube")
-        }.key
+    private suspend fun getVideoId(movieId: Long): String? {
+        return try{
+            movieService.getMovieTrailers(movieId).trailers.firstOrNull {
+                (it.type == "Trailer") && (it.site == "YouTube")
+            }?.key ?: NOT_TRAILER
+        }catch (e : HttpException){
+            NOT_TRAILER
+        }
     }
 
     private suspend fun fetchGenres(): List<ApiGenre> = genreService.getMovieGenreList().genres
@@ -60,13 +64,13 @@ class MovieRepositoryImpl(
 
     override suspend fun fetchTopRatedMovies() {
         val apiMovies = movieService.getTopRatedMoviesListItems().movies
-        val apiGenres = genreService.getMovieGenreList().genres
         val entityMovies = apiMovies.map { apiMovie ->
+            val trailerId = getVideoId(apiMovie.id)
             apiMovie.genres.forEach { genreId ->
-                val genre = apiGenres.first { apiGenre -> apiGenre.id == genreId }
+                val genre = fetchGenres().first { apiGenre -> apiGenre.id == genreId }
                 genreDao.insert(GenreEntity(genreId, apiMovie.id, genre.name))
             }
-            apiMovie.toMovieEntity(TOP_RATED_MOVIE_TYPE, "getVideoId(apiMovie.id)")
+            apiMovie.toMovieEntity(TOP_RATED_MOVIE_TYPE, trailerId)
         }
         movieDao.insert(entityMovies)
 
@@ -82,3 +86,4 @@ class MovieRepositoryImpl(
 
 private const val UPCOMING_MOVIE_TYPE = "UPCOMING"
 private const val TOP_RATED_MOVIE_TYPE = "TOP_RATED"
+private val NOT_TRAILER = null

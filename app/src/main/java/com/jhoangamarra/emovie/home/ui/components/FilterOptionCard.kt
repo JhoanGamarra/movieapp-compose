@@ -17,7 +17,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.jhoangamarra.emovie.home.ui.HomeViewModel
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FilterOptionCard(viewModel: HomeViewModel, option: HomeViewModel.FilterOption) {
 

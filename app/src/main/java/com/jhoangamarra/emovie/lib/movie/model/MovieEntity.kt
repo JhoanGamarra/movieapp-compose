@@ -28,7 +28,7 @@ data class MovieEntity(
     @ColumnInfo(name = "type")
     val type: String,
     @ColumnInfo(name = "trailer")
-    val trailerVideo: String
+    val trailerVideo: String?
 ){
 
     fun toMovie(genres : List<String>) : Movie = Movie(
@@ -36,7 +36,7 @@ data class MovieEntity(
         title = title,
         originalTitle = originalTitle,
         language = language,
-        date = date,
+        date = date.toYear(),
         voteAverage = voteAverage,
         overview = overview,
         genres = genres,
@@ -45,5 +45,8 @@ data class MovieEntity(
         trailerVideo = trailerVideo
     )
 
+    private fun String.toYear(): String {
+        return take(4)
+    }
 
 }
