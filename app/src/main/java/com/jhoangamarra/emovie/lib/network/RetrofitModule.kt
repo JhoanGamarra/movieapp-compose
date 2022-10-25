@@ -19,11 +19,10 @@ object RetrofitModule {
     fun provideEMovieApiRetrofit(
         okHttpClient: OkHttpClient,
         gson: Gson
-    ) : Retrofit = Retrofit.Builder()
+    ): Retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
         .addConverterFactory(GsonConverterFactory.create(gson))
         .client(okHttpClient)
         .build()
-
 }
 private const val baseUrl = "https://api.themoviedb.org/3/"

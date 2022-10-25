@@ -10,7 +10,6 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-
 class GetMovieDetailTest {
 
     private val movieRepository: MovieRepositoryImpl = mockk()
@@ -45,11 +44,10 @@ class GetMovieDetailTest {
         }
         val useCaseResponse = useCase(movieId = movie.id)
 
-        Assert.assertEquals(movie,useCaseResponse)
+        Assert.assertEquals(movie, useCaseResponse)
 
         coVerify(exactly = 1) {
             movieRepository.getMovieDetail(movie.id)
         }
-
     }
 }

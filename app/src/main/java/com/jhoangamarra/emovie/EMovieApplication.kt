@@ -21,5 +21,4 @@ class EMovieApplication : Application() {
 
         Fresco.initialize(this, pipelineConfig)
     }
-
 }

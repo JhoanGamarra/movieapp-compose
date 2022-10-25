@@ -1,4 +1,4 @@
-package com.jhoangamarra.emovie.ui.theme
+package com.jhoangamarra.emovie.lib.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

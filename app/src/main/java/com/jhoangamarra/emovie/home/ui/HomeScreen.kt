@@ -16,6 +16,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import com.jhoangamarra.emovie.LocalNavControllerProvider
+import com.jhoangamarra.emovie.R
 import com.jhoangamarra.emovie.home.navigation.HomeRoute
 import com.jhoangamarra.emovie.home.ui.components.FilterOptionCard
 import com.jhoangamarra.emovie.home.ui.components.RecommendedMoviesList
@@ -36,14 +38,24 @@ fun NavGraphBuilder.homeScreen() = composable(route = HomeRoute) {
     val viewModel: HomeViewModel = hiltViewModel(it)
     val state: HomeViewModel.State by viewModel.state.collectAsState(HomeViewModel.State())
     val events: HomeViewModel.Event? by viewModel.events.collectAsState(initial = null)
-    HomeScreen(viewModel, state, events)
+    HomeScreen(
+        state,
+        events,
+        onItemClicked = { movieId ->
+            viewModel.onItemClicked(movieId)
+        },
+        onFilterMovies = { option, filter ->
+            viewModel.filterMovies(option, filter)
+        }
+    )
 }
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel,
     state: HomeViewModel.State,
-    events: HomeViewModel.Event? = null
+    events: HomeViewModel.Event? = null,
+    onItemClicked: (Long) -> Unit,
+    onFilterMovies: (String, Boolean) -> Unit
 ) {
 
     val navController = LocalNavControllerProvider.current
@@ -64,20 +76,30 @@ fun HomeScreen(
     LazyColumn(
         Modifier
             .padding(start = 20.dp)
-            .fillMaxSize(), verticalArrangement = Arrangement.Top,
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         item {
             Column {
                 StickyTitle()
-                UpcomingMoviesList(viewModel = viewModel, movies = upcomingMovies)
-                TopRatedMoviesList(viewModel = viewModel, movies = topRatedMovies)
-                RecommendedMoviesTitle(viewModel = viewModel, filterOptions = filterOptions)
+                UpcomingMoviesList(
+                    onItemClicked = { id -> onItemClicked(id) },
+                    movies = upcomingMovies
+                )
+                TopRatedMoviesList(
+                    onItemClicked = { id -> onItemClicked(id) },
+                    movies = topRatedMovies
+                )
+                RecommendedMoviesTitle(
+                    onFilterMovies = { key, selected -> onFilterMovies(key, selected) },
+                    filterOptions = filterOptions
+                )
             }
         }
         item {
-            RecommendedMoviesList(viewModel = viewModel, recommendedMovies)
+            RecommendedMoviesList(onItemClicked = { id -> onItemClicked(id) }, recommendedMovies)
         }
     }
 }
@@ -98,14 +120,16 @@ fun StickyTitle() {
             )
         }
     }
-
 }
 
 @Composable
-fun RecommendedMoviesTitle(viewModel: HomeViewModel, filterOptions: List<HomeViewModel.FilterOption>) {
+fun RecommendedMoviesTitle(
+    onFilterMovies: (String, Boolean) -> Unit,
+    filterOptions: List<HomeViewModel.FilterOption>
+) {
     Text(
         modifier = Modifier.padding(top = 20.dp),
-        text = " Recomendados para ti",
+        text = stringResource(id = R.string.label_recommended_movies),
         textAlign = TextAlign.Start,
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold
@@ -114,7 +138,7 @@ fun RecommendedMoviesTitle(viewModel: HomeViewModel, filterOptions: List<HomeVie
         horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.padding(start = 10.dp, top = 20.dp)
     ) {
         items(items = filterOptions) { option ->
-            FilterOptionCard(viewModel, option)
+            FilterOptionCard(onFilterMovies, option)
         }
     }
 }

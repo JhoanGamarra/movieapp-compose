@@ -8,5 +8,4 @@ class FetchUpcomingMovies @Inject constructor(
 ) {
 
     suspend operator fun invoke() = movieRepository.fetchUpcomingMovies()
-
 }

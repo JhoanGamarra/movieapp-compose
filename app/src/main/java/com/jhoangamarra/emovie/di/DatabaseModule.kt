@@ -10,7 +10,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-
 @InstallIn(SingletonComponent::class)
 @Module
 object DatabaseModule {
@@ -23,5 +22,4 @@ object DatabaseModule {
             EMovieDatabase::class.java,
             EMovieDatabase::class.java.name
         ).build()
-
 }

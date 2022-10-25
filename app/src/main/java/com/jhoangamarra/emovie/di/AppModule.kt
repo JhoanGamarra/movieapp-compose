@@ -9,20 +9,15 @@ import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
-
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    @Reusable
+    @Provides
+    fun provideMovieDao(eMovieDatabase: EMovieDatabase): MovieDao = eMovieDatabase.movieDao()
 
     @Reusable
     @Provides
-    fun provideMovieDao(eMovieDatabase: EMovieDatabase) : MovieDao = eMovieDatabase.movieDao()
-
-
-    @Reusable
-    @Provides
-    fun provideGenreDao(eMovieDatabase: EMovieDatabase) : GenreDao = eMovieDatabase.genreDao()
-
-
+    fun provideGenreDao(eMovieDatabase: EMovieDatabase): GenreDao = eMovieDatabase.genreDao()
 }

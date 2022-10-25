@@ -50,17 +50,16 @@ class MovieRepositoryImpl(
     }
 
     private suspend fun getVideoId(movieId: Long): String? {
-        return try{
+        return try {
             movieService.getMovieTrailers(movieId).trailers.firstOrNull {
                 (it.type == "Trailer") && (it.site == "YouTube")
             }?.key ?: NOT_TRAILER
-        }catch (e : HttpException){
+        } catch (e: HttpException) {
             NOT_TRAILER
         }
     }
 
     private suspend fun fetchGenres(): List<ApiGenre> = genreService.getMovieGenreList().genres
-
 
     override suspend fun fetchTopRatedMovies() {
         val apiMovies = movieService.getTopRatedMoviesListItems().movies
@@ -73,7 +72,6 @@ class MovieRepositoryImpl(
             apiMovie.toMovieEntity(TOP_RATED_MOVIE_TYPE, trailerId)
         }
         movieDao.insert(entityMovies)
-
     }
 
     override suspend fun getMovieDetail(movieId: Long): Movie {
@@ -81,7 +79,6 @@ class MovieRepositoryImpl(
         val genres = genreDao.getGenreNameByMovieId(movieId)
         return movieEntity.toMovie(genres)
     }
-
 }
 
 private const val UPCOMING_MOVIE_TYPE = "UPCOMING"

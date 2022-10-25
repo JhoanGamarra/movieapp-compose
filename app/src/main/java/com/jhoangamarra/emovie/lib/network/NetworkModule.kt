@@ -6,11 +6,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
+import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import java.util.concurrent.TimeUnit
-import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -30,7 +30,7 @@ object NetworkModule {
     @Provides
     fun provideAuthInterceptor(): Interceptor {
         return Interceptor { chain ->
-            val url = chain.request().url.newBuilder().addQueryParameter("api_key" , API_KEY).build()
+            val url = chain.request().url.newBuilder().addQueryParameter("api_key", API_KEY).build()
             chain.proceed(
                 request = chain.request()
                     .newBuilder()
@@ -56,7 +56,6 @@ object NetworkModule {
 
         return builder.build()
     }
-
 }
 
 private const val READ_TIME_OUT = 30L

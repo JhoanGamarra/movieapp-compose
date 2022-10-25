@@ -10,12 +10,11 @@ import com.jhoangamarra.emovie.lib.movie.model.GenreEntity
 interface GenreDao {
 
     @Insert(onConflict = IGNORE)
-    fun insert(genreListEntities : List<GenreEntity>)
+    fun insert(genreListEntities: List<GenreEntity>)
 
     @Insert(onConflict = IGNORE)
-    fun insert(genreEntity : GenreEntity)
+    fun insert(genreEntity: GenreEntity)
 
     @Query("SELECT name FROM genreentity WHERE movieId=:movieId")
-    fun getGenreNameByMovieId(movieId : Long) : List<String>
-
+    fun getGenreNameByMovieId(movieId: Long): List<String>
 }

@@ -1,6 +1,5 @@
 package com.jhoangamarra.emovie.lib.movie.model
 
-
 data class Movie(
     val id: Long,
     val title: String,

@@ -9,9 +9,9 @@ import com.jhoangamarra.emovie.lib.definition.CoroutineContextProvider
 import com.jhoangamarra.emovie.lib.definition.launch
 import com.jhoangamarra.emovie.lib.movie.model.Movie
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -31,25 +31,24 @@ class HomeViewModel @Inject constructor(
         getFilterOptions()
     }
 
-    fun filterMovies(option: String, filter :Boolean) {
+    fun filterMovies(option: String, filter: Boolean) {
 
         val topRatedMovies = currentState().topRatedMovieListItems
-        val filteredMovies = if (filter){
+        val filteredMovies = if (filter) {
             topRatedMovies?.let {
                 it.filter { movie ->
                     (movie.language == option || movie.date.contains(option)) && filter
                 }
             }
-        }else{
+        } else {
             topRatedMovies
         }
         launch {
             update { it.copy(filteredMoviesListItems = filteredMovies) }
         }
-
     }
 
-    fun onItemClicked(movieId :Long) {
+    fun onItemClicked(movieId: Long) {
         _event.tryEmit(Event.NavigateToDetail(id = movieId))
     }
 
@@ -142,5 +141,4 @@ class HomeViewModel @Inject constructor(
     }
 
     data class FilterOption(val key: String, val value: String, val selected: Boolean)
-
 }

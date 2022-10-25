@@ -1,4 +1,4 @@
-package com.jhoangamarra.emovie.ui.theme
+package com.jhoangamarra.emovie.lib.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes

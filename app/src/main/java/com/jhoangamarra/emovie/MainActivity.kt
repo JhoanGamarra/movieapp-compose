@@ -17,11 +17,10 @@ import com.jhoangamarra.emovie.home.navigation.HomeRoute
 import com.jhoangamarra.emovie.home.ui.homeScreen
 import com.jhoangamarra.emovie.lib.LocalViewModelStore
 import com.jhoangamarra.emovie.lib.ViewModelStore
+import com.jhoangamarra.emovie.lib.ui.theme.EMovieTheme
 import com.jhoangamarra.emovie.moviedetail.ui.movieDetailScreen
 import com.jhoangamarra.emovie.splash.animationForSplashScreen
-import com.jhoangamarra.emovie.ui.theme.EMovieTheme
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

@@ -29,9 +29,9 @@ data class MovieEntity(
     val type: String,
     @ColumnInfo(name = "trailer")
     val trailerVideo: String?
-){
+) {
 
-    fun toMovie(genres : List<String>) : Movie = Movie(
+    fun toMovie(genres: List<String>): Movie = Movie(
         id = id,
         title = title,
         originalTitle = originalTitle,
@@ -48,5 +48,4 @@ data class MovieEntity(
     private fun String.toYear(): String {
         return take(4)
     }
-
 }

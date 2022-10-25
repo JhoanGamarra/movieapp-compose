@@ -43,7 +43,6 @@ abstract class Route(
     )
 
     protected fun getUriPattern() = "$DeepLinkUri/$uriPatternSuffix"
-
 }
 
 fun <T : Route> NavGraphBuilder.composable(

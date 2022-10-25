@@ -18,9 +18,9 @@ object MovieDetailRoute : Route(route = Route, uriPatternSuffix = UriPatternSuff
         ).toUri()
     }
 
-
     fun navigate(id: Long, navController: NavController) {
-        navigate(navController,
+        navigate(
+            navController,
             Bundle().apply {
                 putLong(IdArgument, id)
             }
@@ -28,7 +28,6 @@ object MovieDetailRoute : Route(route = Route, uriPatternSuffix = UriPatternSuff
     }
 
     const val IdArgument = "id"
-
 }
 
 private const val Route = "movie_detail"

@@ -5,12 +5,10 @@ import androidx.room.RoomDatabase
 import com.jhoangamarra.emovie.lib.movie.model.GenreEntity
 import com.jhoangamarra.emovie.lib.movie.model.MovieEntity
 
-
 @Database(entities = [MovieEntity::class, GenreEntity::class], version = 1)
-abstract class EMovieDatabase : RoomDatabase(){
+abstract class EMovieDatabase : RoomDatabase() {
 
-    abstract fun movieDao() : MovieDao
+    abstract fun movieDao(): MovieDao
 
-    abstract fun genreDao() : GenreDao
-
+    abstract fun genreDao(): GenreDao
 }

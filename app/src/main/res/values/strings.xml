@@ -4,6 +4,11 @@
     <string name="see_less">SEE LESS</string>
     <string name="label_back">Back</string>
     <string name="movie_plot">Movie Plot</string>
+    <string name="see_trailer">Ver Trailer</string>
+    <string name="ic_start_content_description">Star Icon</string>
+    <string name="label_upcoming_movies">" Próximos estrenos"</string>
+    <string name="label_top_rated_movies">Tedencia</string>
+    <string name="label_recommended_movies">Recomendados para ti</string>
 
 
 </resources>

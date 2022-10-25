@@ -9,11 +9,10 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.jhoangamarra.emovie.home.ui.HomeViewModel
 import com.jhoangamarra.emovie.lib.movie.model.Movie
 
 @Composable
-fun RecommendedMoviesList(viewModel : HomeViewModel, movies: List<Movie>) {
+fun RecommendedMoviesList(onItemClicked: (Long) -> Unit, movies: List<Movie>) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(130.dp),
         modifier = Modifier
@@ -23,7 +22,7 @@ fun RecommendedMoviesList(viewModel : HomeViewModel, movies: List<Movie>) {
         items(items = movies) { movie ->
             Row(modifier = Modifier.padding(10.dp)) {
                 MoviePosterCard(
-                    viewModel = viewModel,
+                    onItemClicked,
                     movie = movie
                 )
             }

@@ -23,7 +23,6 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-
 class MovieRepositoryImplTest {
 
     private val movieService: MovieService = mockk()
@@ -114,7 +113,6 @@ class MovieRepositoryImplTest {
     private val topRatedMovieEntityFlow = flowOf(listOf(topRatedMovieEntity))
     private val upcomingMovieList = listOf(upcomingMovie)
     private val topRatedMovieList = listOf(topRatedMovie)
-
 
     @Before
     fun setup() {
@@ -214,7 +212,6 @@ class MovieRepositoryImplTest {
             genreService.getMovieGenreList()
             movieService.getMovieTrailers(apiMovie.id)
         }
-
     }
 
     @Test
@@ -253,20 +250,19 @@ class MovieRepositoryImplTest {
             genreService.getMovieGenreList()
             movieService.getMovieTrailers(apiMovie.id)
         }
-
     }
 
     @Test
-    fun `given a movieId when getMovieDetail is called then it should return a movie from the database`()= runTest {
+    fun `given a movieId when getMovieDetail is called then it should return a movie from the database`() = runTest {
 
         coEvery {
             movieDao.getById(apiMovie.id)
-        }answers {
+        } answers {
             upcomingMovieEntity
         }
         coEvery {
             genreDao.getGenreNameByMovieId(apiMovie.id)
-        }answers {
+        } answers {
             genresList
         }
 
@@ -278,9 +274,7 @@ class MovieRepositoryImplTest {
             movieDao.getById(apiMovie.id)
             genreDao.getGenreNameByMovieId(apiMovie.id)
         }
-
     }
-
 }
 
 private const val UPCOMING_MOVIE_TYPE = "UPCOMING"

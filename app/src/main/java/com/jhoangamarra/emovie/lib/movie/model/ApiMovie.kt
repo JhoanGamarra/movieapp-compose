@@ -25,7 +25,7 @@ data class ApiMovie(
     val posterPath: String
 ) {
 
-    fun toMovieEntity(type: String, trailerMovie : String?): MovieEntity =
+    fun toMovieEntity(type: String, trailerMovie: String?): MovieEntity =
         MovieEntity(
             id = id,
             title = title,
@@ -39,5 +39,4 @@ data class ApiMovie(
             type = type,
             trailerVideo = trailerMovie
         )
-
 }

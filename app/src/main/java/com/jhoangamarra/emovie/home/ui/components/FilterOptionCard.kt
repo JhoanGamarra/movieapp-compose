@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.jhoangamarra.emovie.home.ui.HomeViewModel
 
 @Composable
-fun FilterOptionCard(viewModel: HomeViewModel, option: HomeViewModel.FilterOption) {
+fun FilterOptionCard(onFilterMovies: (String, Boolean) -> Unit, option: HomeViewModel.FilterOption) {
 
     var isSelected by remember {
         mutableStateOf(false)
@@ -33,7 +32,7 @@ fun FilterOptionCard(viewModel: HomeViewModel, option: HomeViewModel.FilterOptio
         },
         onClick = {
             isSelected = !isSelected
-            viewModel.filterMovies(option.key , isSelected)
+            onFilterMovies(option.key, isSelected)
         }
     ) {
         Text(

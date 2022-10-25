@@ -14,5 +14,4 @@ interface MovieRepository {
     suspend fun fetchTopRatedMovies()
 
     suspend fun getMovieDetail(movieId: Long): Movie
-
 }

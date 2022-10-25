@@ -12,7 +12,6 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-
 class GetUpcomingMoviesListItemsTest {
 
     private val movieRepository: MovieRepositoryImpl = mockk()
@@ -58,6 +57,5 @@ class GetUpcomingMoviesListItemsTest {
         coVerify(exactly = 1) {
             movieRepository.getUpcomingMovies()
         }
-
     }
 }

@@ -9,18 +9,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jhoangamarra.emovie.home.ui.HomeViewModel
+import com.jhoangamarra.emovie.R
 import com.jhoangamarra.emovie.lib.movie.model.Movie
 
 @Composable
-fun TopRatedMoviesList(viewModel : HomeViewModel, movies: List<Movie>) {
+fun TopRatedMoviesList(onItemClicked: (Long) -> Unit, movies: List<Movie>) {
     Text(
         modifier = Modifier.padding(top = 20.dp),
-        text = " Tedencia ",
+        text = stringResource(id = R.string.label_top_rated_movies),
         textAlign = TextAlign.Start,
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold
@@ -34,7 +35,7 @@ fun TopRatedMoviesList(viewModel : HomeViewModel, movies: List<Movie>) {
     ) {
         items(items = movies) { movie ->
             MoviePosterCard(
-                viewModel = viewModel,
+                { id -> onItemClicked(id) },
                 movie = movie
             )
         }

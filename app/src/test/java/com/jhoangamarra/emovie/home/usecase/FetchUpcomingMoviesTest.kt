@@ -8,15 +8,13 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 
-
 class FetchUpcomingMoviesTest {
 
-
     private val movieRepository = mockk<MovieRepositoryImpl>()
-    private lateinit var useCase : FetchUpcomingMovies
+    private lateinit var useCase: FetchUpcomingMovies
 
     @Before
-    fun setup(){
+    fun setup() {
         useCase = FetchUpcomingMovies(movieRepository)
     }
 
@@ -30,8 +28,5 @@ class FetchUpcomingMoviesTest {
         coVerify(exactly = 1) {
             movieRepository.fetchUpcomingMovies()
         }
-
     }
-
-
 }

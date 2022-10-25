@@ -4,13 +4,11 @@ import com.jhoangamarra.emovie.lib.definition.AbstractViewModel
 import com.jhoangamarra.emovie.lib.definition.CoroutineContextProvider
 import com.jhoangamarra.emovie.lib.definition.launch
 import com.jhoangamarra.emovie.lib.movie.model.Movie
-import com.jhoangamarra.emovie.moviedetail.model.MovieDetail
 import com.jhoangamarra.emovie.moviedetail.usecase.GetMovieDetail
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.withContext
-
 
 class MovieDetailViewModel @AssistedInject constructor(
     @Assisted private val id: Long,
@@ -21,20 +19,22 @@ class MovieDetailViewModel @AssistedInject constructor(
     coroutineContextProvider = coroutineContextProvider
 ) {
 
-
     init {
         getMovieDetail()
     }
 
-    private fun getMovieDetail(){
+    private fun getMovieDetail() {
         launch {
             update { it.copy(loading = true) }
-            val movieDetail = withContext(io){
+            val movieDetail = withContext(io) {
                 getMovieDetail(id)
             }
             update { it.copy(movieDetail = movieDetail, loading = false) }
         }
+    }
 
+    fun openYoutubeTrailer(trailerKey: String?) {
+        _event.tryEmit(Event.NavigateToTrailerVideo(trailerKey))
     }
 
     data class State(
@@ -42,12 +42,12 @@ class MovieDetailViewModel @AssistedInject constructor(
         val movieDetail: Movie? = null,
     )
 
-    sealed interface Event
-
+    sealed interface Event {
+        data class NavigateToTrailerVideo(val trailerKey: String?) : Event
+    }
 
     @AssistedFactory
     interface Factory {
         fun create(id: Long): MovieDetailViewModel
     }
-
 }

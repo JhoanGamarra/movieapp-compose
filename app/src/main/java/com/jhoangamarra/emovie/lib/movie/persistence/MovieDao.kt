@@ -7,7 +7,6 @@ import androidx.room.Query
 import com.jhoangamarra.emovie.lib.movie.model.MovieEntity
 import kotlinx.coroutines.flow.Flow
 
-
 @Dao
 interface MovieDao {
 
@@ -15,11 +14,11 @@ interface MovieDao {
     fun insert(movieEntity: MovieEntity)
 
     @Insert(onConflict = REPLACE)
-    fun insert(movieListEntities : List<MovieEntity>)
+    fun insert(movieListEntities: List<MovieEntity>)
 
     @Query("SELECT * FROM movieentity WHERE type=:type")
-    fun getAllByType(type : String) : Flow<List<MovieEntity>>
+    fun getAllByType(type: String): Flow<List<MovieEntity>>
 
     @Query("SELECT * FROM movieentity WHERE id=:id")
-    fun getById(id : Long) : MovieEntity
+    fun getById(id: Long): MovieEntity
 }

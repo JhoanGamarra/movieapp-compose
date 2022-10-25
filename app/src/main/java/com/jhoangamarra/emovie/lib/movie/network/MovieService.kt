@@ -19,5 +19,4 @@ interface MovieService {
 
     @GET("movie/{movie_id}/videos")
     suspend fun getMovieTrailers(@Path("movie_id") movieId: Long): ApiTrailerListResponse
-
 }
